@@ -30,13 +30,34 @@
 - `book/notch_mcp_server.py`: инструменты `list_tasks` / `propose_task` рядом с `run_tests`.
 - `book/modules/widgets.py`: вынести `ProposalApproval` и JS-хелперы WebAuthn из `chats.py`, использовать в `board.py` для одобрения.
 
-## Порядок
+## Порядок: две независимые части, выбор не сужается
 
-1. Дождаться решения по PR #12 (рендер `marimo.toml`, `compose.yml` на 143 строки). Доску добавлять поверх его формы.
-2. Ветка `feat/cell-as-task` от `main` в `wforkorg/notch`, перенос файлов из таблицы.
-3. Подключить `hub_io` в `board.py`, снять `TODO(merge)`.
-4. Проверка в своём compose-проекте `-p nb-board`, не трогая `wfork-notch-book*` (AGENTS.md организации).
-5. PR; после влития — issue #3 (действия из ленты как proposals) закрывается механикой `propose()`.
+Работа делится по признаку «трогает ли она `deploy/compose.yml`». Части не зависят друг от
+друга, порядок между ними любой, ждать одну ради другой не нужно.
+
+### Часть A — переносится когда угодно, конфликтов с PR #12 нет
+
+Только новые файлы, ни одного изменения в существующих (кроме одной строки в
+`requirements.txt`):
+
+- `book/modules/task_io.py`, `book/modules/board.py`
+- `tests/test_task_io.py`, `tests/test_board.py`
+- `docs/cell-as-task.md`, `docs/marimo-vs-jupyter.md`, `docs/MERGE-PLAN.md`
+- `pydantic>=2` в `requirements.txt`
+
+Доска после этого запускается вручную (`marimo run book/modules/board.py`) и полностью
+тестируется. Как отдельный сервис в контейнере — ещё нет, это часть B.
+
+### Часть B — трогает `deploy/compose.yml`, форма зависит от PR #12
+
+- сервис `notch-book-board`, `127.0.0.1:2730`, `--base-url /book/board`, `session-cache:ro`
+- ссылка на `/book/board` в оглавлении `book/notch_book.py`
+- инструменты `list_tasks` / `propose_task` в `book/notch_mcp_server.py`
+- вынос `ProposalApproval` и WebAuthn-хелперов в `book/modules/widgets.py`
+
+Если PR #12 к этому моменту влит — пишем поверх его формы. Если нет — пишем поверх текущего
+`main`, а при влитии #12 правим один сервис в компоузе. Оба варианта рабочие, разница в
+несколько строк.
 
 ## Что должна выяснить сессия с доступом к коду (не оператор)
 
