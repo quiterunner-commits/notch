@@ -1,19 +1,15 @@
-# notch
+# notch (черновик слоя «ячейка = задача»)
 
-Ноутбук как система задач. Каждая ячейка — задача, которую может выполнить локальный агент:
-как функцию, как файл, как пункт в туду. Метаданные (статус, приоритет, комментарии,
-зависимости) живут прямо в ячейке.
+Личный черновик для `wforkorg/notch`. Структура повторяет книгу организации, чтобы мерж был
+переносом файлов. План: `docs/MERGE-PLAN.md`.
 
-Цели по порядку:
-
-1. Сравнить архитектуру реактивного (marimo) и нереактивного (Jupyter) ноутбука — `docs/marimo-vs-jupyter.md`.
-2. Задать формат «ячейка = задача» — `docs/cell-as-task.md`, схема в `notch/task.py`.
-3. Первый рабочий ноутбук с туду — `notebooks/notch.py` (marimo).
-4. Дальше: ноутбук как единый источник правды и источник деплоя.
-
-## Запуск
+- `book/modules/task_io.py` — модель `Task` поверх proposal хаба, `list_tasks`, `propose`, без marimo.
+- `book/modules/board.py` — страница `/book/board`: реактивная доска и форма предложения.
+- `docs/marimo-vs-jupyter.md` — зачем реактивный ноутбук.
+- `docs/cell-as-task.md` — формат задачи.
 
 ```bash
-pip install -e .
-marimo edit notebooks/notch.py
+pip install -r requirements-dev.txt
+python -m pytest -q tests
+WFORK_RELAY_URL=http://127.0.0.1:8765 marimo run book/modules/board.py --base-url /book/board
 ```
