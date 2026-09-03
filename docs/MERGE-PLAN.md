@@ -38,7 +38,16 @@
 4. Проверка в своём compose-проекте `-p nb-board`, не трогая `wfork-notch-book*` (AGENTS.md организации).
 5. PR; после влития — issue #3 (действия из ленты как proposals) закрывается механикой `propose()`.
 
-## Открытые вопросы к хабу
+## Что должна выяснить сессия с доступом к коду (не оператор)
 
-- Точная форма `POST /v1/actions/proposals` (аудит видел только GET и approve/reject). `to_proposal()` шлёт `title/intent/capability/metadata`; поправить по факту.
-- Есть ли в ответе `occurred_at` у proposal или только у событий.
+Эти два пункта проверяются чтением кода `local-event-hub`, спрашивать оператора не нужно.
+
+1. **Форма `POST /v1/actions/proposals`.** Аудит видел только `GET` и `approve/reject`.
+   Сейчас `to_proposal()` шлёт `title`, `intent`, `capability`, `metadata` — это догадка
+   по форме ответа `GET`. Найти обработчик создания предложения в хабе, привести
+   `to_proposal()` к его схеме, тест `test_propose_turns_draft_into_hub_task` поправить следом.
+2. **Есть ли `occurred_at` у proposal** или только у событий `/v1/events`. Если нет —
+   убрать поле из `from_proposal()` либо брать время из связанного события.
+
+Пока это не проверено, `propose()` работает как черновик: `list_tasks()` (только чтение)
+от него не зависит и доску показывает корректно.
