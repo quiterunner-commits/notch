@@ -55,6 +55,7 @@ State = Literal[
 ]
 Kind = Literal["func", "file", "shell", "note", "proposal"]
 Owner = Literal["agent", "human"]
+Source = Literal["voice", "keys", "screen", "cursor", "agent"]
 
 # Актор хаба: книгу представляет человек (сессия passkey) или агент.
 ACTOR_KIND = {"human": "user", "agent": "agent"}
@@ -76,6 +77,7 @@ class Task(BaseModel):
     state: State = "draft"
     kind: Kind = "func"
     owner: Owner = "agent"
+    source: Source = "keys"
     priority: int = Field(default=3, ge=1, le=5)
     capability: Optional[str] = None
     # Внешний необратимый эффект — правда о задаче, а не флаг «поважнее»:

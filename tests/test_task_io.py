@@ -27,6 +27,10 @@ def test_new_task_is_local_draft():
     assert t.effective_capability() == "task.func"
 
 
+def test_source_is_recorded():
+    assert Task(title="x", source="voice").source == "voice"
+
+
 def test_run_success_sets_done():
     t = Task(title="A")
     evidence = t.run(lambda: 42)
